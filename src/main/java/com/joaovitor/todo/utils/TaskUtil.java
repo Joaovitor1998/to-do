@@ -12,11 +12,4 @@ public class TaskUtil {
         return task;
     }
 
-    public static TaskDTO toDTO(Task task) {
-        TaskDTO dto = new TaskDTO();
-        dto.setTitle(task.getTitle());
-        dto.setDescription(task.getDescription());
-        return dto;
-    }
-
 }

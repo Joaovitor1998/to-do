@@ -3,6 +3,7 @@ package com.joaovitor.todo.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.joaovitor.todo.exceptions.TaskNotFoundException;
 import com.joaovitor.todo.model.Task;
 import com.joaovitor.todo.repository.TaskRepository;
 
@@ -21,12 +22,20 @@ public class TaskService {
         this.repository = repository;
     }
 
-    private Task findById(long id) {
+    public Task verifyById(long id) {
         Optional<Task> taskFound = repository.findById(id);
         if (taskFound.isEmpty()) {
-            return null;
+            String errorMessage = String.format("Task with id %d not found.", id);
+            throw new TaskNotFoundException(errorMessage);
         }
         return taskFound.get();
+    }
+
+    public ResponseEntity<Task> findById(long id){
+        Task taskFound = this.verifyById(id);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(taskFound);
     }
 
     public ResponseEntity<List<Task>> findAll() {
@@ -54,7 +63,7 @@ public class TaskService {
     }
 
     public ResponseEntity<Task> update(Task task) {
-        Task taskFound = findById(task.getId());
+        Task taskFound = verifyById(task.getId());
 
         taskFound.setTitle(task.getTitle());
         taskFound.setDescription(task.getDescription());
@@ -66,18 +75,21 @@ public class TaskService {
     }
 
     public ResponseEntity<String> delete(long id) {
-        Task taskFound = this.findById(id);
+        Task taskFound = this.verifyById(id);
         repository.delete(taskFound);
-        String headerValue = "Task with id " + id + " deleted successfully.";
+        String bodyMessage = String.format("Task with id %d deleted successfully.", id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .header("Task-Deleted", headerValue)
-                .body("Task deleted successfully.");
+                .body(bodyMessage);
     }
 
-    public void toggleIsDoneStatus(Task task) {
-        Task taskFound = this.findById(task.getId());
+    public ResponseEntity<String> toggleIsDoneStatus(Task task) {
+        Task taskFound = this.verifyById(task.getId());
         taskFound.toggleIsDone();
         repository.save(taskFound);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body("Task was successfully marked as completed.");
     }
 }

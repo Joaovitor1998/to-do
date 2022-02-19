@@ -1,0 +1,217 @@
+openapi: 3.0.0
+info:
+  title: to Do Task API
+  description: It is an API used for Tasks creation, also known as To Do List.
+  version: v0.0.1
+  contact:
+    email: joaovitorf1998oliveira@gmail.com
+    name: João Vitor Ferreira de Oliveira
+    url: https://www.linkedin.com/in/joao-vitor-fo1998/
+
+servers:
+  - url: http://localhost:8089/api/v1
+
+paths:
+  /tasks:
+    get:
+      summary: Task List
+      description: It returns a list of all tasks.
+      responses:
+        '200':
+          description: Operation worked correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskModel"
+
+  /tasks/{id}:
+    get:
+      summary: Task by ID
+      description: It returns the task from the given ID
+      parameters:
+        - in: path
+          name: id
+          description:  The task ID must be given.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task with the given ID was found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskModel"
+                  
+        '400':
+          description: Task with the given ID was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /tasks/done:
+    get:
+      summary: Task Status
+      description: It returns a list of all tasks marked as completed
+      responses:
+        '200':
+          description: Tasks Status (completed) operations was successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskModel"
+          
+  /tasks/not-done:
+    get:
+      summary: Task Status
+      description: It returns a list of all tasks marked as not completed
+      responses:
+        '200':
+          description: Task Status (not completed) operation was successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskModel"
+          
+  /tasks/edit:
+    patch:
+      summary: Task Update
+      description: It updates a task with the modified values and set the modifiedAt attribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/TaskModel"
+                
+      responses:
+        '200':
+          description: Update operation was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskModel"
+                  
+  /tasks/delete/{id}:
+    delete:
+      summary: Task Delete
+      description: It deletes a task by the given ID
+      parameters:
+      - name: id
+        in: path
+        description: A task ID must be given
+        required: true
+        schema:
+          type: integer
+          
+      responses:
+        '200':
+          description: Delete operation was successful.
+          content:
+            application/json:
+              schema:
+                type: string
+        
+        '400':
+          description: Delete operation got a non valid ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                
+  /tasks/setIsDone:
+    patch:
+      summary: Task Status Change
+      description: It changes the task status to completed
+      requestBody:
+        description: Task Status Change operations was successful.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskModel"
+        
+      responses:
+        '200':
+          description: The task status change operation was successful.
+          content:
+            aaplication/json:
+              schema:
+                type: string
+
+  /tasks/new:
+    post:
+      summary: Task Creation
+      description: It creates a new task.
+      
+      requestBody:
+        description: TaskDTO must be given.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskDTO"
+      
+      responses:
+        '201':
+          description: Task Creation operation was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskModel"
+        '400':
+          description: Task could not be created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  advice:
+                    type: string
+            
+
+      
+  
+components:
+  schemas:
+    TaskDTO:
+      type: object
+      required:
+      - title
+      - description
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          
+    TaskModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+        modifiedAt:
+          type: string
+        finishedAt:
+          type: string
+        isDone:
+          type: boolean
+ 

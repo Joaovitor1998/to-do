@@ -2,14 +2,17 @@ package com.joaovitor.todo.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.joaovitor.todo.dto.TaskDTO;
+import com.joaovitor.todo.exceptions.TaskNotValidException;
 import com.joaovitor.todo.model.Task;
 import com.joaovitor.todo.service.TaskService;
 import com.joaovitor.todo.utils.TaskUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +35,12 @@ public class TaskController {
         this.service = service;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Task> findById(@PathVariable long id){
+        return service.findById(id);
+    } 
+
+    // content = @Content(mediaType = "application/json")))
     @GetMapping
     public ResponseEntity<List<Task>> findAll() {
         return service.findAll();
@@ -41,14 +50,17 @@ public class TaskController {
     public ResponseEntity<List<Task>> findByIdDoneTrue() {
         return service.findByIsDoneTrue();
     }
-
+    
     @GetMapping("/not-done")
     public ResponseEntity<List<Task>> findByIsDoneFalse() {
         return service.findByIsDoneFalse();
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Task> create(@RequestBody TaskDTO task) {
+    public ResponseEntity<Task> create(@Valid @RequestBody TaskDTO task, BindingResult result) {
+        if(result.hasErrors()){
+            throw new TaskNotValidException(result);
+        }
         return service.create(TaskUtil.toEntity(task));
     }
 
@@ -64,10 +76,7 @@ public class TaskController {
 
     @PatchMapping("/setIsDone")
     private ResponseEntity<String> toggleIsDoneStatus(@RequestBody Task task) {
-        service.toggleIsDoneStatus(task);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Deleted successfully!");
+        return service.toggleIsDoneStatus(task);
     }
 
 }

@@ -66,7 +66,7 @@ public class TaskServiceTest {
         Mockito.when(repository.findByIsDoneTrue()).thenReturn(Collections.singletonList(expectedTask));
 
         // Then
-        List<Task> retrievedList = service.findByIsDone().getBody();
+        List<Task> retrievedList = service.findByIsDoneTrue().getBody();
 
         Assertions.assertThat(retrievedList.get(0)).isEqualTo(expectedTask);
         Assertions.assertThat(retrievedList.get(0).getIsDone()).isTrue();
@@ -84,7 +84,7 @@ public class TaskServiceTest {
         Mockito.when(repository.findByIsDoneFalse()).thenReturn(Collections.singletonList(expectedTask));
 
         // Then
-        List<Task> retrievedList = service.findByNotDone().getBody();
+        List<Task> retrievedList = service.findByIsDoneFalse().getBody();
 
         Assertions.assertThat(retrievedList.get(0)).isEqualTo(expectedTask);
         Assertions.assertThat(retrievedList.get(0).getIsDone()).isFalse();
@@ -103,7 +103,7 @@ public class TaskServiceTest {
         when(repository.save(any(Task.class))).thenReturn(expectedTask);
 
         // Then
-        Task savedTask = service.save(expectedTask).getBody();
+        Task savedTask = service.create(expectedTask).getBody();
 
         Assertions.assertThat(savedTask.getTitle()).isEqualTo(expectedTask.getTitle());
         Assertions.assertThat(savedTask.getDescription()).isEqualTo(expectedTask.getDescription());
@@ -170,7 +170,7 @@ public class TaskServiceTest {
         when(repository.save(any())).thenReturn(any(Task.class));
 
         // Then
-        service.setIsDone(expectedTask);
+        service.toggleIsDoneStatus(expectedTask);
 
         verify(repository, times(1)).findById(any());
         verify(repository, times(1)).save(any(Task.class));
