@@ -4,7 +4,7 @@
 ## This is a simple CRUD app for a To Do list.
 
 
-Tabela de conteúdos
+Contents
 =================
 <p align="center">
  <a href="#requirements">Requirements</a> •
@@ -22,7 +22,7 @@ Note that Maven requires JDK for compilation. Also, for this project I am using 
 
 
 
-### <p id="running">Rodando o Back End</p>
+### <p id="running">Running app</p>
 ```bash
 # Clone this repo
  $ git clone https://github.com/Joaovitor1998/to-do
@@ -39,8 +39,8 @@ Note that Maven requires JDK for compilation. Also, for this project I am using 
 
 
 
-### <p id="techs">🛠 Tecnologias</p>
-As seguintes ferramentas foram usadas na construção do projeto:
+### <p id="techs">🛠 Technologies</p>
+Here is what I used for this project:
 - [Java](https://www.java.com/) - JDK 17
 - [Spring Boot](https://spring.io/projects/spring-boot)
 - [Spring MVC](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html)
