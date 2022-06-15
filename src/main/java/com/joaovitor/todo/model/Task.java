@@ -19,68 +19,85 @@ public class Task {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Lob
     private String description;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
     private LocalDateTime modifiedAt;
+
     private LocalDateTime finishedAt;
 
-    private boolean isDone;
+    private boolean isFinished;
 
     public Task() {
         this.createdAt = LocalDateTime.now();
-        this.isDone = false;
+        this.isFinished = false;
     }
 
-    public boolean getIsDone() {
-        return isDone;
+    public Task(String title){
+        this.title = title;
+        this.createdAt = LocalDateTime.now();
+        this.isFinished = false;
     }
 
-    public void toggleIsDone() {
-        this.isDone = !this.isDone;
+    public Task(String title, String description){
+        this.title = title;
+        this.description = description;
+        this.createdAt = LocalDateTime.now();
+        this.isFinished = false;
     }
 
-    public long getId() {
-        return id;
+    public Long getId(){
+        return this.id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getTitle(){
+        return this.title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(String title){
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getCreatedAt(){
+        return this.createdAt;
     }
 
     public LocalDateTime getModifiedAt() {
-        return modifiedAt;
+        return this.modifiedAt;
     }
 
-    public void setModifiedAt() {
+    public void modifyTask(){
         this.modifiedAt = LocalDateTime.now();
     }
 
-    public LocalDateTime getFinishedAt() {
-        return finishedAt;
+    public LocalDateTime getFinishedAt(){
+        return this.finishedAt;
     }
 
-    public void setFinishedAt() {
+    public void finishTask(){
         this.finishedAt = LocalDateTime.now();
+        this.isFinished = true;
+    }
+
+    public boolean isFinished() {
+        return this.isFinished;
+    }
+
+    public void recoverTask() {
+        this.finishedAt = null;
+        this.isFinished = false;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
+
+    public String getDescription(){
+        return this.description;
     }
 
 }
