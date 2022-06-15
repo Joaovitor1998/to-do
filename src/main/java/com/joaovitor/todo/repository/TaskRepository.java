@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    List<Task> findByIsDoneTrue();
+    List<Task> findByIsFinishedTrue();
 
-    List<Task> findByIsDoneFalse();
+    List<Task> findByIsFinishedFalse();
 }

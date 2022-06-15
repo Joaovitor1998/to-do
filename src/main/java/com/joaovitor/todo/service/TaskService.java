@@ -23,73 +23,102 @@ public class TaskService {
     }
 
     public Task verifyById(long id) {
+      
         Optional<Task> taskFound = repository.findById(id);
+      
         if (taskFound.isEmpty()) {
             String errorMessage = String.format("Task with id %d not found.", id);
             throw new TaskNotFoundException(errorMessage);
         }
+      
         return taskFound.get();
     }
 
     public ResponseEntity<Task> findById(long id){
+        
         Task taskFound = this.verifyById(id);
+        
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(taskFound);
     }
 
     public ResponseEntity<List<Task>> findAll() {
+
+        List<Task> tasksFound = this.repository.findAll();
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(repository.findAll());
+                .body(tasksFound);
     }
 
-    public ResponseEntity<List<Task>> findByIsDoneTrue() {
+    public ResponseEntity<List<Task>> findByIsFinished() {
+
+        List<Task> tasksFound = this.repository.findByIsFinishedTrue();
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(repository.findByIsDoneTrue());
+                .body(tasksFound);
     }
 
-    public ResponseEntity<List<Task>> findByIsDoneFalse() {
+    public ResponseEntity<List<Task>> findByIsNotFinished() {
+
+        List<Task> tasksFound = this.repository.findByIsFinishedFalse();
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(repository.findByIsDoneFalse());
+                .body(tasksFound);
     }
 
     public ResponseEntity<Task> create(Task task) {
+
+        Task savedTask = this.repository.save(task);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(this.repository.save(task));
+                .body(savedTask);
     }
 
     public ResponseEntity<Task> update(Task task) {
+        
         Task taskFound = verifyById(task.getId());
 
         taskFound.setTitle(task.getTitle());
         taskFound.setDescription(task.getDescription());
-        taskFound.setModifiedAt();
+        taskFound.modifyTask();
+
+        Task taskSaved = this.repository.save(taskFound);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(repository.save(taskFound));
+                .body(taskSaved);
     }
 
     public ResponseEntity<String> delete(long id) {
+
         Task taskFound = this.verifyById(id);
+
         repository.delete(taskFound);
+
         String bodyMessage = String.format("Task with id %d deleted successfully.", id);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(bodyMessage);
     }
 
-    public ResponseEntity<String> toggleIsDoneStatus(Task task) {
-        Task taskFound = this.verifyById(task.getId());
-        taskFound.toggleIsDone();
+    public ResponseEntity<String> finishTask(Long id) {
+
+        Task taskFound = this.verifyById(id);
+        
+        taskFound.finishTask();
+
         repository.save(taskFound);
+
+        String bodyMessage = "Task was successfully marked as completed.";
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body("Task was successfully marked as completed.");
+            .body(bodyMessage);
     }
 }
