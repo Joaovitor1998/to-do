@@ -36,58 +36,67 @@ public class TaskServiceTest {
     private TaskRepository repository;
 
     @Test
-    @DisplayName("Should return list of Task / findAll() ")
+    @DisplayName("Should return a list of Tasks / findAll() ")
     void shouldReturnListWhenSuccessful() {
         // Given
-        Task expectedTask = new Task();
-        expectedTask.setTitle("My title");
-        expectedTask.setDescription("My description");
+        Task expectedTask = createNewTask();
 
         // When
-        Mockito.when(repository.findAll()).thenReturn(Collections.singletonList(expectedTask));
+        Mockito.when(repository.findAll())
+            .thenReturn(
+                    Collections.singletonList(expectedTask));
 
         // Then
         List<Task> retrievedList = service.findAll().getBody();
 
-        Assertions.assertThat(retrievedList.get(0)).isEqualTo(expectedTask);
+        Assertions.assertThat(retrievedList.get(0))
+            .isEqualTo(expectedTask);
 
     }
 
     @Test
-    @DisplayName("Should return list of done tasks / findByIsDone()")
-    void shouldReturnListOfDoneTasks() {
+    @DisplayName("Should return a list of finished tasks / findByIsFinished()")
+    void shouldReturnListOfFinishedTasks() {
         // Given
-        Task expectedTask = new Task();
-        expectedTask.setTitle("My title");
-        expectedTask.setDescription("My description");
-        expectedTask.toggleIsDone();
+        Task expectedTask = createNewTask();
+        expectedTask.finishTask();
 
         // When
-        Mockito.when(repository.findByIsDoneTrue()).thenReturn(Collections.singletonList(expectedTask));
+        Mockito.when(repository.findByIsFinishedTrue())
+            .thenReturn(
+                Collections.singletonList(expectedTask));
 
         // Then
-        List<Task> retrievedList = service.findByIsDoneTrue().getBody();
+        List<Task> retrievedList = service.findByIsFinished().getBody();
 
-        Assertions.assertThat(retrievedList.get(0)).isEqualTo(expectedTask);
-        Assertions.assertThat(retrievedList.get(0).getIsDone()).isTrue();
+        Assertions.assertThat(retrievedList.get(0))
+            .isEqualTo(expectedTask);
+        
+        Assertions.assertThat(retrievedList.get(0)
+            .isFinished())
+            .isTrue();
     }
 
     @Test
-    @DisplayName("Should return list of not done tasks / findByNotDone()")
-    void shouldReturnListOfNotDoneTasks() {
+    @DisplayName("Should return a list of unfinished tasks / findByIsNotFinished())")
+    void shouldReturnListOfNotFinishedTasks() {
         // Given
-        Task expectedTask = new Task();
-        expectedTask.setTitle("My title");
-        expectedTask.setDescription("My description");
+        Task expectedTask = createNewTask();
 
         // When
-        Mockito.when(repository.findByIsDoneFalse()).thenReturn(Collections.singletonList(expectedTask));
+        Mockito.when(repository.findByIsFinishedFalse())
+            .thenReturn(
+                Collections.singletonList(expectedTask));
 
         // Then
-        List<Task> retrievedList = service.findByIsDoneFalse().getBody();
+        List<Task> retrievedList = service.findByIsNotFinished().getBody();
 
-        Assertions.assertThat(retrievedList.get(0)).isEqualTo(expectedTask);
-        Assertions.assertThat(retrievedList.get(0).getIsDone()).isFalse();
+        Assertions.assertThat(retrievedList.get(0))
+            .isEqualTo(expectedTask);
+        
+        Assertions.assertThat(retrievedList.get(0)
+            .isFinished())
+            .isFalse();
     }
 
     @Test
@@ -95,44 +104,54 @@ public class TaskServiceTest {
     void shouldSaveTaskWhenRequested() {
 
         // Given
-        Task expectedTask = new Task();
-        expectedTask.setTitle("My title");
-        expectedTask.setDescription("My description");
+        Task expectedTask = createNewTask();
 
         // When
-        when(repository.save(any(Task.class))).thenReturn(expectedTask);
+        when(
+            repository.save(
+                any(Task.class))
+            ).thenReturn(expectedTask);
 
         // Then
         Task savedTask = service.create(expectedTask).getBody();
 
-        Assertions.assertThat(savedTask.getTitle()).isEqualTo(expectedTask.getTitle());
-        Assertions.assertThat(savedTask.getDescription()).isEqualTo(expectedTask.getDescription());
+        Assertions.assertThat(savedTask.getTitle())
+            .isEqualTo(expectedTask.getTitle());
+        
+        Assertions.assertThat(savedTask.getDescription())
+            .isEqualTo(expectedTask.getDescription());
     }
 
     @Test
     @DisplayName("Should update task when requested / update()")
     void shouldUpdateTaskWhenRequested() {
         // Given
-        Task originalTask = new Task();
-        originalTask.setTitle("My title");
-        originalTask.setDescription("My description");
+        Task originalTask = createNewTask();
 
-        Task expectedTask = new Task();
-        expectedTask.setTitle("My title updated");
-        expectedTask.setDescription("My description updated");
+        Task expectedTask = new Task(
+            "My updated title",
+            "My updated description"
+        );
         expectedTask.setModifiedAt();
 
         // When
-        when(repository.findById(any())).thenReturn(Optional.of(originalTask));
+        when(
+            repository.findById(any())
+            ).thenReturn(Optional.of(originalTask));
 
-        when(repository.save(any(Task.class))).thenReturn(expectedTask);
+        when(
+            repository.save(any(Task.class))
+            ).thenReturn(expectedTask);
 
         // Then
         Task updatedTask = service.update(expectedTask).getBody();
 
         assertThat(updatedTask.getTitle()).isEqualTo(expectedTask.getTitle());
+
         assertThat(updatedTask.getDescription()).isEqualTo(expectedTask.getDescription());
+
         assertThat(updatedTask.getModifiedAt()).isEqualTo(expectedTask.getModifiedAt());
+
         assertThat(updatedTask.getCreatedAt()).isEqualTo(expectedTask.getCreatedAt());
 
     }
@@ -141,38 +160,50 @@ public class TaskServiceTest {
     @DisplayName("Should delete task when requested / delete()")
     void shouldDeleteTaskWhenRequested() {
         // Given
-        Task expectedTask = new Task();
-        expectedTask.setTitle("My title updated");
-        expectedTask.setDescription("My description updated");
+        Task task = createNewTask();
 
         // When
-        when(repository.findById(any())).thenReturn(Optional.of(expectedTask));
+        when(
+            repository.findById(any())
+            ).thenReturn(Optional.of(task));
 
-        doNothing().when(repository).delete(expectedTask);
+        doNothing().when(repository).delete(task);
 
         // Then
-        service.delete(1);
-        verify(repository, times(1)).findById(any());
-        verify(repository, times(1)).delete(expectedTask);
+        service.delete(1L);
+        verify(repository, times(1)).findById(1L);
+        verify(repository, times(1)).delete(task);
 
     }
 
     @Test
-    @DisplayName("Should toggle task completness status / setIsDone()")
-    void shouldToggleTaskCompletnessWhenRequested() {
+    @DisplayName("Should mark task as finished / finishTask()")
+    void shouldMarkTaskAsFinishedWhenRequested() {
         // Given
-        Task expectedTask = new Task();
-        expectedTask.setTitle("My title updated");
-        expectedTask.setDescription("My description updated");
+        Task task = createNewTask();
 
         // When
-        when(repository.findById(any())).thenReturn(Optional.of(expectedTask));
-        when(repository.save(any())).thenReturn(any(Task.class));
+        when(
+            repository.findById(1L)
+            ).thenReturn(Optional.of(task));
+        
+        when(
+            repository.save(any())
+            ).thenReturn(any(Task.class));
 
         // Then
-        service.toggleIsDoneStatus(expectedTask);
+        service.finishTask(1L);
 
-        verify(repository, times(1)).findById(any());
-        verify(repository, times(1)).save(any(Task.class));
+        verify(repository, times(1))
+            .findById(1L);
+
+        verify(repository, times(1))
+            .save(any(Task.class));
+    }
+
+    private Task createNewTask(){
+        return new Task(
+            "My title",
+            "My description");
     }
 }

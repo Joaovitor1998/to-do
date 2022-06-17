@@ -85,7 +85,7 @@ public class TaskService {
 
         taskFound.setTitle(task.getTitle());
         taskFound.setDescription(task.getDescription());
-        taskFound.modifyTask();
+        taskFound.setModifiedAt();
 
         Task taskSaved = this.repository.save(taskFound);
 

@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.joaovitor.todo.model.Task;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -26,48 +26,31 @@ public class TaskRepositoryTest {
     private String taskTitle = "My title";
     private String taskDescription = "My description";
 
-    private Task createTask() {
-        Task task = new Task();
-        task.setTitle(taskTitle);
-        task.setDescription(taskDescription);
-        return task;
+    private Task createNewTask() {
+        return new Task(
+            taskTitle,
+            taskDescription
+        );
     }
-
-    @BeforeAll
-    void setup() {
-    }
-
-    @Test // Finished
-    void whenDeleteShouldBeRemoved() {
-
-    }
-
-    @Test // Finished
-    void whenUpdateShouldBeUpdated() {
-    }
+   
 
     @Test // Finished
     void whenSaveThenShouldBeCreated() {
 
-        Task task1 = createTask();
-        Task task2 = createTask();
-        Task task3 = createTask();
-        Task task4 = createTask();
+        
+        List<Task> tasksList = new ArrayList<>() {{
+            add(createNewTask());
+            add(createNewTask());
+            add(createNewTask());
+            add(createNewTask());
+        }};
+            
+        when(repository.saveAll(tasksList))
+            .thenReturn(tasksList);
+            
+        List<Task> savedTasks = this.repository.saveAll(tasksList);
 
-        List<Task> tasks = new ArrayList<>() {
-            {
-                add(task1);
-                add(task2);
-                add(task3);
-                add(task4);
-            }
-        };
-
-        // doReturn(List<Task> savedTasks).when(repository.saveAll(tasks));
-
-        List<Task> savedTasks = this.repository.saveAll(tasks);
-
-        savedTasks.stream().forEach(task -> {
+        savedTasks.stream().forEach( task -> {
 
             assertThat(task).isNotNull();
 
@@ -77,7 +60,7 @@ public class TaskRepositoryTest {
 
             assertThat(task.getDescription()).isEqualTo(taskDescription);
 
-            assertThat(task.getIsDone()).isFalse();
+            assertThat(task.isFinished()).isFalse();
 
             assertThat(task.getCreatedAt()).isEqualTo(task.getCreatedAt());
 
@@ -85,56 +68,60 @@ public class TaskRepositoryTest {
 
             assertThat(task.getFinishedAt()).isNull();
 
-            System.out.println(task.getId());
         });
 
     }
 
-    @Test // Finished
-    void testFindByIsDoneFalse() {
-        Task task1 = createTask();
-        Task task2 = createTask();
-        Task task3 = createTask();
-        Task task4 = createTask();
+    @Test
+    void testFindByIsNotFinished() {
 
-        when(repository.findByIsDoneFalse()).thenReturn(
+        when(repository.findByIsFinishedFalse())
+            .thenReturn(
                 new ArrayList<>() {
                     {
-                        add(task1);
-                        add(task2);
-                        add(task3);
-                        add(task4);
+                        add(createNewTask());
+                        add(createNewTask());
+                        add(createNewTask());
+                        add(createNewTask());
                     }
                 });
 
-        List<Task> isDoneFalse = repository.findByIsDoneFalse();
+        List<Task> notFinishedTasks = repository.findByIsFinishedFalse();
 
-        isDoneFalse.stream().forEach(item -> assertThat(item.getIsDone()).isFalse());
+        notFinishedTasks.stream()
+            .forEach( task -> 
+                assertThat( task.isFinished() ).isFalse());
     }
 
-    @Test // Finished
-    void testFindByIsDoneTrue() {
-        Task task1 = createTask();
-        Task task2 = createTask();
-        Task task3 = createTask();
-        Task task4 = createTask();
-        task1.toggleIsDone();
-        task2.toggleIsDone();
-        task3.toggleIsDone();
-        task4.toggleIsDone();
+    @Test
+    void testFindByIsFinished() {
 
-        when(repository.findByIsDoneTrue()).thenReturn(
+        List<Task> tasksList = new ArrayList<>(
+            Arrays.asList(
+                createNewTask(),
+                createNewTask(), 
+                createNewTask(),
+                createNewTask()));
+        
+        tasksList.forEach(task -> task.finishTask());
+
+        when(repository.findByIsFinishedTrue())
+            .thenReturn(
                 new ArrayList<>() {
                     {
-                        add(task1);
-                        add(task2);
-                        add(task3);
-                        add(task4);
+                        addAll(tasksList);
                     }
                 });
 
-        List<Task> isDoneTrue = repository.findByIsDoneTrue();
+        List<Task> finishedTasks = repository.findByIsFinishedTrue();
 
-        isDoneTrue.stream().forEach(item -> assertThat(item.getIsDone()).isTrue());
+        finishedTasks.stream()
+            .forEach( task -> 
+                assertThat( task.isFinished() ).isTrue());
+    }
+
+    @Test
+    void testDeleteThenShouldBeDeleted() {
+
     }
 }

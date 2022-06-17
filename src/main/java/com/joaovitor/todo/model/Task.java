@@ -70,7 +70,7 @@ public class Task {
         return this.modifiedAt;
     }
 
-    public void modifyTask(){
+    public void setModifiedAt(){
         this.modifiedAt = LocalDateTime.now();
     }
 

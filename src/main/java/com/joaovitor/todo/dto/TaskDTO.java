@@ -12,11 +12,13 @@ public class TaskDTO {
     @Length(max = 30, message = "Title cannot be over 30 characters.")
     private String title;
 
-    @NotBlank(message = "Description must not be blank.")
-    @NotNull(message = "Description must not be null.")
     private String description;
 
     public TaskDTO() {
+    }
+
+    public TaskDTO(String title) {
+        this.title = title;
     }
 
     public TaskDTO(String title, String description) {

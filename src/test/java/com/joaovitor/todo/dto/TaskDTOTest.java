@@ -40,6 +40,7 @@ public class TaskDTOTest {
         Set<ConstraintViolation<TaskDTO>> violations = validator.validate(dto);
 
         assertThat(violations.isEmpty()).isFalse();
+
         assertThat(violations.size()).isEqualTo(2);
 
         checkExceptionMessage(violations, blankMessage, nullMessage);
@@ -74,38 +75,25 @@ public class TaskDTOTest {
     }
 
     @Test
-    @DisplayName("Description should not be null")
-    void shouldNotBeValidWhenDescriptionIsNull() {
-        TaskDTO dto = new TaskDTO("My title", null);
-
-        Set<ConstraintViolation<TaskDTO>> violations = validator.validate(dto);
-
-        assertThat(violations.isEmpty()).isFalse();
-        assertThat(violations.size()).isEqualTo(2);
-
-        checkExceptionMessage(violations, blankMessage, nullMessage);
-    }
-
-    @Test
-    @DisplayName("Description should not be blank")
-    void shouldNotBeValidWhenDescriptionIsBlank() {
-        TaskDTO dto = new TaskDTO("My title", "");
-
-        Set<ConstraintViolation<TaskDTO>> violations = validator.validate(dto);
-
-        assertThat(violations.isEmpty()).isFalse();
-        assertThat(violations.size()).isEqualTo(1);
-
-        checkExceptionMessage(violations, blankMessage);
-    }
-
-    @Test
     @DisplayName("TaskDTO should be successfully created")
-    void shouldSuccessWhenCreatedCorrectly() {
-        TaskDTO dto = new TaskDTO("My title", "My description");
+    void shouldBeSuccessfulWhenCreated() {
+        TaskDTO taskWithDescription = new TaskDTO("My title", "My description");
+        TaskDTO taskWithoutDescription = new TaskDTO("My title");
 
-        Set<ConstraintViolation<TaskDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<TaskDTO>> withDescriptionViolations = validator.validate(taskWithDescription);
+        Set<ConstraintViolation<TaskDTO>> withoutDescriptionViolations = validator.validate(taskWithoutDescription);
 
-        assertThat(violations.isEmpty()).isTrue();
+        assertThat(withDescriptionViolations.isEmpty()).isTrue();
+
+        assertThat(taskWithDescription.getTitle()).isEqualTo("My title");
+
+        assertThat(taskWithDescription.getDescription()).isEqualTo("My description");
+        
+        assertThat(withoutDescriptionViolations.isEmpty()).isTrue();
+
+        assertThat(taskWithoutDescription.getTitle()).isEqualTo("My title");
+
+        assertThat(taskWithoutDescription.getDescription()).isNull();
+
     }
 }
